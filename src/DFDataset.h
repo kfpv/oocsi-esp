@@ -13,13 +13,15 @@
 #ifndef DFDATASET_h
 #define DFDATASET_h
 
-#if defined(ESP32) || defined(NANO_ESP32)
+#ifdef ESP32
     #include <WiFi.h>
     #include <HTTPClient.h>
+    #include <WiFiClientSecure.h>
 #endif
 #ifdef ESP8266
     #include <ESP8266WiFi.h>
     #include <ESP8266HTTPClient.h>
+    #include <WiFiClientSecure.h>
 #endif
 #if defined(ARDUINO_SAMD_MKRWIFI1010) || defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_SAMD_NANO_33_IOT) || defined(ARDUINO_NANO_RP2040_CONNECT)
     #include <WiFiNINA.h>
@@ -81,7 +83,11 @@ class DFDataset {
   private:
 
     // wifi connection
+#if defined(ESP8266) || defined(ESP32)
+    WiFiClientSecure wifi;
+#else
     WiFiClient wifi;
+#endif
 
     // configuration
     const char* host;
