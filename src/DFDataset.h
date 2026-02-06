@@ -86,7 +86,7 @@ class DFDataset {
 #if defined(ESP8266) || defined(ESP32)
     WiFiClientSecure wifi;
 #else
-    WiFiClient wifi;
+    WiFiSSLClient wifi;
 #endif
 
     // configuration
@@ -114,6 +114,8 @@ class DFDataset {
     void println(const String &message);
     void println(char message);
     void urlencode(char* dst, const char* src);
+
+    void ensureTlsConfigured();
 };
 
 #endif
