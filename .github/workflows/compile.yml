@@ -1,0 +1,45 @@
+name: Compile
+
+on:
+  push:
+  pull_request:
+
+env:
+  ARDUINO_BOARD_MANAGER_ADDITIONAL_URLS: >-
+    https://espressif.github.io/arduino-esp32/package_esp32_index.json
+    https://arduino.esp8266.com/stable/package_esp8266com_index.json
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        fqbn:
+          - esp32:esp32:esp32
+          - esp8266:esp8266:nodemcuv2
+          - arduino:samd:nano_33_iot
+          - arduino:megaavr:uno2018
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set Up Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install Cores
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:megaavr arduino:samd esp32:esp32 esp8266:esp8266
+
+      - name: Install Library Dependencies
+        run: |
+          arduino-cli lib install "ArduinoJson" "ArduinoHttpClient" "WiFiNINA"
+
+      - name: Compile Example (OOCSI_sender)
+        run: |
+          arduino-cli compile \
+            --warnings all \
+            --fqbn ${{ matrix.fqbn }} \
+            --library . \
+            examples/OOCSI_sender
